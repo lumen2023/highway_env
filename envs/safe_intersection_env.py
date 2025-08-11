@@ -48,19 +48,20 @@ class safeIntersectionEnv(AbstractEnv):
                 "target_speeds": [0, 4.5, 9]  # 目标速度列表
             },
             "simulation_frequency": 25,  # 仿真频率设置为 25 Hz，降低计算量
-            "policy_frequency": 5,  # 策略执行频率设置为 5 Hz
+            "policy_frequency": 10,  # 策略执行频率设置为 5 Hz
             "duration": 20,  # 场景持续时间 [s]
-            "lanes_per_direction": 1,  # 每条道路车道数
+            "lanes_per_direction": 2,  # 每条道路车道数
             # "destination": "ir0",  # 目标位置
             "destination": "o1",  # 目标位置
             "controlled_vehicles": 1,  # 被控车辆数量
             "initial_vehicle_count": 10,  # 初始车辆数量
-            "spawn_probability": 0.5,  # 车辆生成概率
+            "spawn_probability": 0.3,  # 车辆生成概率
             "screen_width": 1200,  # 屏幕宽度
             "screen_height": 2000,  # 屏幕高度
             "centering_position": [0.5, 0.6],  # 屏幕中心位置
             "scaling": 5.5 * 1.3,  # 缩放因子
-            "collision_reward": 0,  # 碰撞惩罚
+            # "collision_reward": 0,  # 碰撞惩罚
+            "collision_reward": -0.5,  # 碰撞惩罚
             "high_speed_reward": 1,  # 高速奖励
             "arrived_reward": 1,  # 到达奖励
             "reward_speed_range": [5.0, 9.0],  # 奖励速度范围

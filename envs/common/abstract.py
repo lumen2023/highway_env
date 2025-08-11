@@ -45,16 +45,17 @@ class AbstractEnv(gym.Env):
 
     def __init__(self, config: dict = None, render_mode: Optional[str] = None) -> None:
         super().__init__()
-
+        print("\n！！！！！！！！！！！！！！外部库！！！！！！！！！！！！！！！！\n")
         # Configuration
         self.config = self.default_config()
         self.configure(config)
+        self.idm_flag =  False
 
         # 历史记录
         history_len = self.config["history_len"]
         # 保存过去5帧的状态信息
         self.history = deque(maxlen=history_len) # LYZ-history
-
+        self.action_idm = None
         self.is_first_step = True  # 标记是否是第一个时间步
         self.time = 0
 
@@ -223,12 +224,15 @@ class AbstractEnv(gym.Env):
             "crashed": self.vehicle.crashed,
             "on_road": self.vehicle.on_road,
             "action": action,
+            "action_idm": self.action_idm,
             # "cost": 5 * float(self.vehicle.crashed) +
             #         0.05 * np.clip(utils.lmap(self.vehicle.speed * np.cos(self.vehicle.heading), self.config["cost_speed_range"], [0, 1]), 0, 1)
             # "cost": 5 * float(self.vehicle.crashed) + 5 * float(not self.vehicle.on_road)
             #         + self._compute_headway_cost_ego(self.vehicle),
+            # "cost": 5 * float(self.vehicle.crashed) + 5 * float(not self.vehicle.on_road)
+            #         + min(self._cost(),3),
             "cost": 5 * float(self.vehicle.crashed) + 5 * float(not self.vehicle.on_road)
-                    + min(self._cost(),3),
+                    + min(self._cost(), 3),
             "time": self.time,
             "position": self.vehicle.position,
             "speed": self.vehicle.speed,
@@ -318,8 +322,11 @@ class AbstractEnv(gym.Env):
             action = action.flatten()  # 这一步非常重要
         if self.road is None or self.vehicle is None:
             raise NotImplementedError("The road and vehicle must be initialized in the environment implementation")
-        # steering = self.steering_control()
-        # action = [self.a_ego_idm, self.s_ego_mobil]
+
+        # print("idm_flag: ", self.idm_flag)
+        ## IDM ##
+        steering = self.steering_control()
+        self.action_idm = [self.a_ego_idm, self.s_ego_mobil]
         self.time += 1 / self.config["policy_frequency"]
         self._simulate(action)
         obs = self.observation_type.observe()
@@ -351,6 +358,7 @@ class AbstractEnv(gym.Env):
             indices = np.linspace(0, len - 1, num_samples, dtype=int)
             obs = np.array([self.history[i] for i in indices]).ravel()
             # obs = obs.reshape(-1, )
+
         # U_field, vehicles_obs, X, Y = self.plot_cost()
         # self.risk_field.update_plot(self.fig, self.ax, X, Y, U_field, vehicles_obs, done, self.time)
         return obs, reward, terminated, truncated, info

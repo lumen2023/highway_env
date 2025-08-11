@@ -126,9 +126,9 @@ class HighwayEnv(AbstractEnv):
         scaled_speed = utils.lmap(forward_speed, self.config["reward_speed_range"], [-1, 1])
 
         # 计算风险奖励，包括碰撞、是否在道路上及额外成本
-        # risk = 1 * float(self.vehicle.crashed) + 1 * float(not self.vehicle.on_road) + self._cost()
+        risk = 5 * float(self.vehicle.crashed) + 5 * float(not self.vehicle.on_road) + self._cost()
         # risk = 5 * float(self.vehicle.crashed) + 5 * float(not self.vehicle.on_road)
-        risk = self._cost()
+        # risk = self._cost()
         # 返回包含高速奖励、在道路奖励和风险奖励的字典
         return {
             "high_speed_reward": np.clip(scaled_speed, -1, 1),
